@@ -10,12 +10,12 @@ Fast Monte-Carlo simulator for entanglement purification protocols over a lossy 
 - [Contributing](#contributing)
 - [License](#license)
 
-### What it does
+## What it does
 - Models a realistic optical fiber (0–30 km) with attenuation (0.2 dB/km) + cumulative depolarizing noise (1 % per 10 km).
 - Implements 5 standard recurrence purification protocols using **Pauli error tracking** (no density matrices → very fast).
 - Runs 20 000 shots per distance point → accurate fidelity and success probability curves.
 
-### Protocols included
+## Protocols included
 | Protocol   | Pairs used | Purpose                     |
 |------------|------------|-----------------------------|
 | No Purif   | 1          | Raw link                    |
@@ -25,12 +25,12 @@ Fast Monte-Carlo simulator for entanglement purification protocols over a lossy 
 | Ss-Dp      | 3          | Single-selection double-purif (X+Z) |
 | Ds-Dp      | 5          | Deep double-selection double-purif |
 
-### Results
+## Results
 Generates two clean 4:3 figures:
 - `purification_fidelity_4x3.png` → Fidelity vs distance (with F=0.5 threshold)
 - `purification_success_4x3.png` → Success probability vs distance
 
-### How to run
+## How to run
 ```bash
 pip install numpy matplotlib
 python purification_sim.py
