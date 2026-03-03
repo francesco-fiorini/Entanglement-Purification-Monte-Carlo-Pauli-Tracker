@@ -3,10 +3,10 @@
 Fast Monte-Carlo simulator for entanglement purification protocols over a lossy + depolarizing optical fiber.
 
 ## Table of Contents
-- [What id does](#whatitdoes)
-- [Protocols Included](#protocols)
-- [Results](#results)
-- [How to run](#howtorun)
+- [What id does](#what-it-does)
+- [Protocols Included](#protocols-included)
+- [Results](#results)-
+- [How to run](#how-torun)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -34,6 +34,7 @@ Generates two clean 4:3 figures:
 ```bash
 pip install numpy matplotlib
 python purification_sim.py
+```
 
 ## Contributing
 Contributions are welcome! Please contact francesco.fiorini@phd.unipi.it for suggested changes.
