@@ -5,8 +5,8 @@ Fast Monte-Carlo simulator for entanglement purification protocols over a lossy 
 ## Table of Contents
 - [What id does](#what-it-does)
 - [Protocols Included](#protocols-included)
-- [Results](#results)-
-- [How to run](#how-torun)
+- [Results](#results)
+- [How to run](#how-to-run)
 - [Contributing](#contributing)
 - [License](#license)
 
