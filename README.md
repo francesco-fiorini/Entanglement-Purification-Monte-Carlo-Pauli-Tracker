@@ -3,7 +3,7 @@
 Fast Monte-Carlo Pauli-tracker Python simulator for entanglement purification protocols over a lossy + depolarizing optical fiber.
 
 ## Table of Contents
-- [What id does](#what-it-does)
+- [What it does](#what-it-does)
 - [Protocols Included](#protocols-included)
 - [Results](#results)
 - [How to run](#how-to-run)
