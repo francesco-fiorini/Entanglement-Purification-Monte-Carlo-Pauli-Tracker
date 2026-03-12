@@ -13,7 +13,7 @@ Fast Monte-Carlo Pauli-tracker Python simulator for entanglement purification pr
 ## What it does
 - Models a realistic optical fiber (0–30 km) with attenuation (0.2 dB/km) + cumulative depolarizing noise (1 % per 10 km).
 - Implements 5 standard recurrence purification protocols using **Pauli error tracking** (no density matrices → very fast).
-- Runs 20 000 shots per distance point → accurate fidelity and success probability curves.
+- Runs 50 000 shots per distance point → accurate fidelity and success probability curves.
 
 ## Protocols included
 | Protocol   | Pairs used | Purpose                     |
