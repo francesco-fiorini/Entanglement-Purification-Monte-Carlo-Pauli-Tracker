@@ -1,4 +1,5 @@
-""" Author: Francesco Fiorini, francesco.fiorini@phd.unipi.it
+"""
+Author: Francesco Fiorini, francesco.fiorini@phd.unipi.it
 =============================================================================
 Entanglement Purification – Monte-Carlo Simulation (Pauli Tracking)
 Protocols : No-Purif, Ss-SpX, Ss-SpZ, Ds-Sp, Ss-Dp, Ds-Dp
@@ -17,7 +18,7 @@ import matplotlib.pyplot as plt
 DISTANCES_KM     = np.arange(0, 31, 2)   # Total fiber lengths [km]
 ALPHA_DB_PER_KM  = 0.2                   # Attenuation [dB/km]
 DEPOL_FIBER_RATE = 0.01                  # Depolarizing prob per 10 km
-N_MONTE_CARLO    = 20000                 # MC shots per distance point
+N_MONTE_CARLO    = 50000                 # MC shots per distance point
 SEED             = 42
 
 np.random.seed(SEED)
@@ -34,7 +35,7 @@ def initial_fidelity(d_km: float) -> float:
     depol_survival = max(0.0, (1.0 - DEPOL_FIBER_RATE) ** (d_km / 10.0))
     
     # 3. Combined Fidelity mapping to Werner State
-    F_eff = eta * depol_survival + (1 - eta) * 0.25
+    F_eff = eta * depol_survival + (1 - eta) * 0.25  
     return float(np.clip(F_eff, 0.0, 1.0))
 
 # ==============================================================================
@@ -50,7 +51,7 @@ def pmul(a: str, b: str) -> str: return _mul_table[(a, b)]
 
 _bell_from_pauli = {'I': 'Phi+', 'X': 'Psi+', 'Z': 'Phi-', 'Y': 'Psi-'}
 def get_bell_state(pair: tuple) -> str: return _bell_from_pauli[pmul(*pair)]
-def pair_fidelity(pair: tuple) -> float: return 1.0 if get_bell_state(pair) == 'Phi+' else 0.0
+def pair_fidelity(pair: tuple) -> float: return 1.0 if get_bell_state(pair) == 'Phi+' else 0.0  
 
 def measure_z_parity(pair: tuple) -> bool: return get_bell_state(pair) in ('Phi+', 'Phi-')
 def measure_x_parity(pair: tuple) -> bool: return get_bell_state(pair) in ('Phi+', 'Psi+')
@@ -99,7 +100,8 @@ def protocol_ds_sp(pairs: list):
     # Ancilla 2 to ancilla 1 (Double selection verification)
     anc2, anc1 = cnot_propagate(anc2, anc1)
     
-    if measure_z_parity(anc1) and measure_z_parity(anc2): return ctrl
+
+    if measure_z_parity(anc1) and measure_x_parity(anc2): return ctrl
     return None
 
 def protocol_ss_dp(pairs: list):
@@ -113,18 +115,20 @@ def protocol_ss_dp(pairs: list):
     return None
 
 def protocol_ds_dp(pairs: list):
-    ctrl, anc_x1, anc_x2, anc_z1, anc_z2 = pairs[0], pairs[1], pairs[2], pairs[3], pairs[4]
+    ctrl, cd, ef, gh, ij = pairs[0], pairs[1], pairs[2], pairs[3], pairs[4]
     
     # --- X-error Double Selection Block ---
-    ctrl, anc_x1 = cnot_propagate(ctrl, anc_x1)     # Primary to anc_x1
-    anc_x2, anc_x1 = cnot_propagate(anc_x2, anc_x1) # Verification check on X
+    ctrl, cd = cnot_propagate(ctrl, cd)     # X purification
+    ef, cd   = cnot_propagate(ef, cd)       # Verification check on X
     
     # --- Z-error Double Selection Block ---
-    anc_z1, ctrl = cnot_propagate(anc_z1, ctrl)     # Reversed: anc_z1 to Primary
-    anc_z1, anc_z2 = cnot_propagate(anc_z1, anc_z2) # Reversed verification check on Z
+    gh, ctrl = cnot_propagate(gh, ctrl)     # Reversed: Z purification
+    
+    gh, ij   = cnot_propagate(gh, ij)       # Reversed verification check on Z
 
-    if (measure_z_parity(anc_x1) and measure_z_parity(anc_x2) and
-        measure_x_parity(anc_z1) and measure_x_parity(anc_z2)): 
+
+    if (measure_z_parity(cd) and measure_x_parity(ef) and
+        measure_x_parity(gh) and measure_z_parity(ij)): 
         return ctrl
     return None
 
@@ -132,7 +136,7 @@ def protocol_ds_dp(pairs: list):
 # 4. SWEEP EXECUTION
 # ==============================================================================
 protocols = {
-    'No Purif': (None,            1),
+    'No Purif': (None,             1),
     'Ss-SpX':   (protocol_ss_spX,  2),
     'Ss-SpZ':   (protocol_ss_spZ,  2),
     'Ds-Sp':    (protocol_ds_sp,   3),
@@ -166,35 +170,38 @@ colors  = ['#333333', '#1f77b4', '#9467bd', '#ff7f0e', '#2ca02c', '#d62728']
 markers = ['s', '^', 'v', 'o', 'D', 'P']
 lstyles = ['dotted', 'solid', 'solid', 'dashed', 'dashdot', (0, (5,2))]
 
-plt.rcParams.update({'font.size': 12, 'axes.labelsize': 13, 'axes.titlesize': 14})
+plt.rcParams.update({'font.size': 14, 'axes.labelsize': 15, 'axes.titlesize': 16})
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
 # Plot 1: Fidelity
 for i, name in enumerate(protocols):
     ax1.plot(DISTANCES_KM, results[name]['fidelity'], label=name, color=colors[i],
-             linestyle=lstyles[i], marker=markers[i], markersize=6, linewidth=2.0)
+             linestyle=lstyles[i], marker=markers[i], markersize=7, linewidth=2.0)
     
-ax1.axhline(0.5, color='red', linestyle='--', linewidth=1.5, label='Threshold F = 0.5')
+ax1.axhline(0.5, color='red', linestyle='--', linewidth=1.5, label='Threshold Fidelity = 0.5')
 ax1.set_xlabel('Fiber length (km)')
 ax1.set_ylabel('Mean Output Fidelity')
-ax1.set_title('Monte Carlo Fidelity vs Distance')
 ax1.set_ylim(0.35, 1.05)
 ax1.grid(True, alpha=0.3)
-ax1.legend(ncol=2)
+ax1.legend(ncol=2, loc='upper right')
 
 # Plot 2: Success Probability
 for i, name in enumerate(protocols):
     if name == 'No Purif': continue
     ax2.plot(DISTANCES_KM, results[name]['p_success'], label=name, color=colors[i],
-             linestyle=lstyles[i], marker=markers[i], markersize=6, linewidth=2.0)
+             linestyle=lstyles[i], marker=markers[i], markersize=7, linewidth=2.0)
 
 ax2.set_xlabel('Fiber length (km)')
-ax2.set_ylabel('Empirical Probability of Success')
-ax2.set_title('Monte Carlo Success Probability vs Distance')
+ax2.set_ylabel('Parity Success Probability')
 ax2.set_ylim(0, 1.05)
 ax2.grid(True, alpha=0.3)
-ax2.legend()
+ax2.legend(loc='upper right')
+
+
+ax1.text(-0.1, 1.05, 'a)', transform=ax1.transAxes, size=20, weight='bold')
+ax2.text(-0.1, 1.05, 'b)', transform=ax2.transAxes, size=20, weight='bold')
 
 plt.tight_layout()
+plt.savefig('FidelityandProbSuccess.png', dpi=300, bbox_inches='tight')
 plt.show()
